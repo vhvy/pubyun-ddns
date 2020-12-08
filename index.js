@@ -1,5 +1,5 @@
-import axios from "axios";
-import FormData from "form-data";
+const axios = require("axios");
+const FormData = require("form-data");
 
 const baseURL = "https://www.pubyun.com";
 

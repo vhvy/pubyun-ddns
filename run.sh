@@ -3,4 +3,4 @@
 path=/
 
 cd $path
-node index.js
+npm start
