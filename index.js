@@ -1,5 +1,6 @@
 const axios = require("axios");
 const FormData = require("form-data");
+const cheerio = require("cheerio");
 
 const baseURL = "https://www.pubyun.com";
 
@@ -76,6 +77,26 @@ async function login() {
     return parseCookie(res.headers['set-cookie']);
 }
 
+async function checkedIp(cookie, ip) {
+
+    const path = updatePath + id + "/";
+
+    const res = await http.get(path, {
+        headers: {
+            cookie: "csrftoken=" + cookie['csrftoken'] + "; sessionid=" + cookie['sessionid']
+        }
+    });
+
+    const $ = cheerio.load(res.data);
+
+    const currentIp = $("input[name=ip]").val();
+
+    return {
+        ipEqual: currentIp === ip,
+        postCookie: parseCookie(res.headers['set-cookie'])
+    }
+}
+
 async function update(cookie, ip) {
 
     const { header, form } = createData({
@@ -106,7 +127,8 @@ async function getIp() {
 async function main() {
     const ip = await getIp();
     const cookie = await login();
-    await update(cookie, ip);
+    const { ipEqual, postCookie } = await checkedIp(cookie, ip);
+    !ipEqual && await update(postCookie, ip);
 }
 
 main();
