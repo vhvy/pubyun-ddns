@@ -6,7 +6,7 @@ const baseURL = "https://www.pubyun.com";
 
 const loginPath = "/accounts/signin/";
 
-const getIpPath = "https://api.ipify.org";
+const getIpPath = "https://httpbin.org/ip";
 
 const updatePath = "/user/dyndns/rrs/dyndnsorstatic/";
 
@@ -70,6 +70,7 @@ async function login() {
     const res = await http.post(loginPath, form, {
         headers: {
             ...header,
+            Referer: "https://www.pubyun.com/accounts/signin/",
             cookie: "csrftoken=" + cookie['csrftoken'] + "; sessionid=" + cookie['sessionid']
         },
     });
@@ -83,7 +84,8 @@ async function checkedIp(cookie, ip) {
 
     const res = await http.get(path, {
         headers: {
-            cookie: "csrftoken=" + cookie['csrftoken'] + "; sessionid=" + cookie['sessionid']
+            cookie: "csrftoken=" + cookie['csrftoken'] + "; sessionid=" + cookie['sessionid'],
+            referer: "https://www.pubyun.com/user/"
         }
     });
 
@@ -114,14 +116,15 @@ async function update(cookie, ip) {
     await http.post(path, form, {
         headers: {
             ...header,
-            cookie: "csrftoken=" + cookie['csrftoken'] + "; sessionid=" + cookie['sessionid']
+            cookie: "csrftoken=" + cookie['csrftoken'] + "; sessionid=" + cookie['sessionid'],
+            referer: baseURL + path
         },
     });
 }
 
 async function getIp() {
     const res = await http.get(getIpPath);
-    return res.data;
+    return res.data.origin;
 }
 
 async function main() {
